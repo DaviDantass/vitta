@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{template.html}">
+<head>
+    <title>Vitta</title>
+</head>
+
+<body>
+    <div layout:fragment="content">
+        <section class="hero">
+            <div class="container">
+                <div class="hero-content">
+                    <h1 class="hero-logo">Vitta</h1>
+
+                    <h2 class="hero-title">Find professionals in <span>a range of specialties</span></h2>
+                    <p class="hero-subtitle">and schedule your appointment with ease</p>
+                </div>
+
+                <div class="hero-image">
+                    <img src="../static/assets/doctor.png" alt="Doctor wearing a mask" th:src="@{/assets/doctor.png}">
+                    <img src="../static/assets/female-doctor.png" alt="Doctor with a stethoscope" th:src="@{/assets/female-doctor.png}">
+                </div>
+            </div>
+        </section>
+    </div>
+</body>
+</html>

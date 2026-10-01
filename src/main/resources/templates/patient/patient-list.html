@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{template.html}">
+<head>
+    <title>Patients</title>
+</head>
+
+<body>
+    <div layout:fragment="content">
+        <main class="container">
+            <section class="card">
+                <h2 class="title">Patients</h2>
+
+                <div class="table-controls">
+                    <a href="patient-form.html" th:href="@{/patients/form}" class="btn btn-tertiary">
+                        <img src="/static/assets/plus.png" th:src="@{/assets/plus.png}" alt="Add icon" class="btn-icon">
+                        New patient
+                    </a>
+                </div>
+
+                <div class="patient-table-scroll">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Phone</th>
+                                <th>CPF</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <tr th:each="patient: ${patients}">
+                                <td th:text="${patient.name}"></td>
+                                <td th:text="${patient.email}"></td>
+                                <td th:text="${patient.phone}"></td>
+                                <td th:text="${patient.cpf}"></td>
+                                <td>
+                                    <a href="#" class="btn btn-edit" th:href="@{/patients/form(id=${patient.id})}" title="Edit">
+                                        <img src="/static/assets/edit.svg" th:src="@{/assets/edit.svg}" alt="Edit">
+                                    </a>
+
+                                    <a href="#deleteModal" class="btn btn-delete" data-toggle="modal" th:data-id="${patient.id}" th:data-url="@{/patients}" title="Delete">
+                                        <img src="/static/assets/delete.svg" th:src="@{/assets/delete.svg}" alt="Delete">
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div th:replace="~{components/_pagination.html :: pagination(url = 'patients', records = ${patients})}"></div>
+            </section>
+        </main>
+
+        <div th:replace="~{components/_delete_modal.html :: modal}"></div>
+    </div>
+</body>
+</html>

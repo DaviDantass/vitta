@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{template.html}">
+<head>
+    <title>Schedule appointment</title>
+</head>
+
+<body>
+    <div layout:fragment="content">
+        <main class="container">
+            <section class="card form-card">
+                <h2 class="title">Schedule appointment</h2>
+
+                <form method="post" action="#" th:action="@{/appointments}" th:object="${form}">
+                    <input type="hidden" name="id" th:field="*{id}">
+
+                    <div class="form-group">
+                        <label for="specialty">Specialty</label>
+                        <select id="specialty" name="specialty" required th:field="*{specialty}">
+                            <option th:value="${null}">Select a specialty</option>
+                            <option th:each="specialty : ${specialties}" th:value="${specialty}" th:text="${specialty}" th:selected="${form.specialty == specialty}"></option>
+                        </select>
+                        <div class="alert alert-danger" th:if="${#fields.hasErrors('specialty')}" th:errors="*{specialty}"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="doctorId">Doctor</label>
+                        <select id="doctorId" name="doctorId" required th:field="*{doctorId}" th:data-selected-id="${form.doctorId}">
+                            <option th:value="${null}">Select a doctor</option>
+                        </select>
+                        <div class="alert alert-danger" th:if="${#fields.hasErrors('doctorId')}" th:errors="*{doctorId}">Error!</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="patientId">Patient</label>
+                        <select id="patientId" required th:field="*{patientId}">
+                            <option value="">Select a patient</option>
+                            <option th:each="patient : ${patients}" th:value="${patient.id}"
+                                    th:text="${patient.name + ' — ' + patient.cpf}"></option>
+                        </select>
+                        <div class="alert alert-danger" th:if="${#fields.hasErrors('patientId')}" th:errors="*{patientId}"></div>
+                        <p th:if="${#lists.isEmpty(patients)}">No patients registered. <a th:href="@{/patients/form}">Register a patient</a> before scheduling.</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="dateTime">Date</label>
+                        <input type="datetime-local" id="dateTime" required th:field="*{dateTime}">
+                        <div class="alert alert-danger" th:if="${#fields.hasErrors('dateTime')}" th:errors="*{dateTime}"></div>
+                    </div>
+
+                    <div class="buttons">
+                        <button type="submit" class="btn btn-primary">
+                            <img src="/static/assets/plus.png" th:src="@{/assets/plus.png}" alt="Add icon" class="btn-icon">Save
+                        </button>
+
+                        <a href="appointment-list.html" th:href="@{/appointments}" class="btn btn-secondary">
+                            <img src="/static/assets/back.png" th:src="@{/assets/back.png}" alt="Back" class="btn-icon">Back
+                        </a>
+                    </div>
+                </form>
+            </section>
+        </main>
+    </div>
+</body>
+</html>

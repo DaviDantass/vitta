@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title>Vitta</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../static/css/styles.css" th:href="@{/css/styles.css}">
+</head>
+
+<body>
+    <div class="wrapper">
+        <div th:replace="~{components/_menu.html :: menu}" sec:authorize="isAuthenticated()"></div>
+
+        <div class="container">
+            <div th:replace="~{components/_messages.html :: messages}" th:remove="tag"></div>
+        </div>
+
+        <div layout:fragment="content" th:remove="tag"></div>
+
+        <div class="footer" id="footer" th:replace="~{components/_footer.html :: footer}"></div>
+    </div>
+
+    <script src="../static/js/script.js" th:src="@{/js/script.js}"></script>
+</body>
+</html>

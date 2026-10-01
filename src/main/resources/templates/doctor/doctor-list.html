@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{template.html}">
+<head>
+    <title>Doctors</title>
+</head>
+
+<body>
+    <div layout:fragment="content">
+        <main class="container">
+            <section class="card">
+                <h2 class="title">Doctors</h2>
+
+                <div class="table-controls">
+                    <a href="doctor-form.html" th:href="@{/doctors/form}" class="btn btn-tertiary">
+                        <img src="/static/assets/plus.png" th:src="@{/assets/plus.png}" alt="Add icon" class="btn-icon">
+                        New doctor
+                    </a>
+                </div>
+
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>CRM</th>
+                            <th>Specialty</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        <tr th:each="doctor: ${doctors}">
+                            <td th:text="${doctor.name}"></td>
+                            <td th:text="${doctor.email}"></td>
+                            <td th:text="${doctor.medicalRegistration}"></td>
+                            <td th:text="${doctor.specialty}"></td>
+                            <td>
+                                <a href="#" class="btn btn-edit" th:href="@{/doctors/form?id={id}(id=${doctor.id})}" title="Edit">
+                                    <img src="/static/assets/edit.svg" th:src="@{/assets/edit.svg}" alt="Edit">
+                                </a>
+
+                                <a href="#deleteModal" class="btn btn-delete" data-toggle="modal" th:data-id="${doctor.id}" data-url="/doctors" title="Delete">
+                                    <img src="/static/assets/delete.svg" th:src="@{/assets/delete.svg}" alt="Delete">
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div th:replace="~{components/_pagination.html :: pagination(url = 'doctors', records = ${doctors})}"></div>
+            </section>
+        </main>
+
+        <div th:replace="~{components/_delete_modal.html :: modal}"></div>
+    </div>
+</body>
+</html>

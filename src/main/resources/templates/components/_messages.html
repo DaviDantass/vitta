@@ -1,0 +1,14 @@
+<div xmlns:th="http://thymeleaf.org" th:fragment="messages">
+    <div class="alert alert-danger text-center text-uppercase" th:if="${error != null}">
+        <p>
+            <strong th:text="${error}"></strong>
+        </p>
+    </div>
+
+    <div class="alert alert-success text-center text-uppercase" th:if="${param.success != null}">
+        <p>
+            <strong>Operation completed successfully!</strong>
+        </p>
+    </div>
+</div>
+

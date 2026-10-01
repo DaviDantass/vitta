@@ -1,0 +1,23 @@
+name: vitta
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: vitta-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root_local}
+      MYSQL_DATABASE: vitta
+      MYSQL_USER: ${DB_USERNAME:-vitta}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-vitta_local}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u root -p\"$$MYSQL_ROOT_PASSWORD\""]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+volumes:
+  mysql_data:
+    name: vitta_mysql_data

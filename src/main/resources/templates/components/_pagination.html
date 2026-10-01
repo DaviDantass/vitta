@@ -1,0 +1,16 @@
+<div class="table-footer" xmlns:th="http://thymeleaf.org" th:fragment="pagination(url, records)">
+    <div th:if="${records != null} and ${records.totalElements > 0}">
+        <p class="results">Showing <b th:text="${records.numberOfElements}"></b> of <b th:text="${records.totalElements}"></b> records</p>
+        <div class="pagination" th:with="previous=${records.hasPrevious()} ? ${url} + '?page=' + (${records.number - 1}) : '', next=${records.hasNext()} ? ${url} + '?page=' + (${records.number + 1}) : ''">
+            <a th:href="${previous}" th:classappend="${!records.hasPrevious()} ? ' disabled'" class="btn btn-pagination" th:text="'Previous'"></a>
+            <span class="page-item" th:each="i: ${#numbers.sequence(1, records.totalPages)}" th:classappend="${records.number + 1 == i} ? ' active disabled'">
+                <a th:if="${records.number + 1 != i}" th:href="${url} + '?page=' + (${i - 1})" class="page-link" th:text="${i}"></a>
+                <span th:if="${records.number + 1 == i}" class="current-page" th:text="${i}"></span>
+            </span>
+            <a th:href="${next}" th:classappend="${!records.hasNext()} ? 'disabled'" class="btn btn-pagination" th:text="'Next'"></a>
+        </div>
+    </div>
+    <div th:if="${records == null} or ${records.totalElements == 0}">
+        <div class="hint-text">No records found.</div>
+    </div>
+</div>

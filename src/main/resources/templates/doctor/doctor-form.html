@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{template.html}">
+<head>
+    <title>Doctor registration</title>
+</head>
+
+<body>
+    <div layout:fragment="content">
+        <main class="container">
+            <section class="card form-card">
+                <h2 class="title">Doctor registration</h2>
+
+                <form method="post" action="#" th:action="@{/doctors}" th:object="${form}">
+                    <input type="hidden" name="id" th:field="*{id}">
+
+                    <div class="form-group">
+                        <label for="name">Name:</label>
+                        <input id="name" name="name" th:field="*{name}" required>
+                        <div class="alert alert-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Error!</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Email:</label>
+                        <input id="email" name="email" th:field="*{email}" required>
+                        <div class="alert alert-danger" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="phone">Phone:</label>
+                        <input id="phone" name="phone" th:field="*{phone}" required>
+                        <div class="alert alert-danger" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="medicalRegistration">CRM:</label>
+                        <input id="medicalRegistration" name="medicalRegistration" th:field="*{medicalRegistration}" required>
+                        <div class="alert alert-danger" th:if="${#fields.hasErrors('medicalRegistration')}" th:errors="*{medicalRegistration}"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="specialty">Specialty</label>
+                        <select id="specialty" name="specialty" required th:field="*{specialty}">
+                            <option th:value="${null}">Select a specialty</option>
+                            <option th:each="specialty : ${specialties}" th:value="${specialty}" th:text="${specialty}" th:selected="${form.specialty == specialty}"></option>
+                        </select>
+                        <div class="alert alert-danger" th:if="${#fields.hasErrors('specialty')}" th:errors="*{specialty}"></div>
+                    </div>
+
+                    <div class="buttons">
+                        <button type="submit" class="btn btn-primary">
+                            <img src="/static/assets/plus.png" th:src="@{/assets/plus.png}" alt="Add icon" class="btn-icon">Save
+                        </button>
+
+                        <a href="doctor-list.html" th:href="@{/doctors}" class="btn btn-secondary">
+                            <img src="/static/assets/back.png" th:src="@{/assets/back.png}" alt="Back" class="btn-icon">Back
+                        </a>
+                    </div>
+                </form>
+            </section>
+        </main>
+    </div>
+</body>
+</html>
