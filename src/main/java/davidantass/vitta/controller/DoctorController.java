@@ -77,8 +77,8 @@ public class DoctorController {
 
     @GetMapping("{specialty}")
     @ResponseBody
-    public List<DoctorSummary> listDoctorsBySpecialty(@PathVariable String specialty) {
-        return service.listBySpecialty(Specialty.valueOf(specialty));
+    public List<DoctorSummary> listDoctorsBySpecialty(@PathVariable Specialty specialty) {
+        return service.listBySpecialty(specialty);
     }
 
 }

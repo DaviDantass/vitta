@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{template.html}">
+<head>
+    <title th:text="${statusCode + ' - Unable to complete operation'}">Unable to complete operation</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <main class="container">
+            <section class="card">
+                <h1 class="text-center">Unable to complete operation</h1>
+                <p class="text-center" th:text="${message}">Please check your request.</p>
+                <div class="buttons">
+                    <a th:href="@{/}" class="btn btn-primary">Back to home</a>
+                </div>
+            </section>
+        </main>
+    </div>
+</body>
+</html>
