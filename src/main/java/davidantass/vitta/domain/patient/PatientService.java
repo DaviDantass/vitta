@@ -2,6 +2,8 @@ package davidantass.vitta.domain.patient;
 
 import davidantass.vitta.domain.BusinessRuleException;
 import davidantass.vitta.domain.appointment.AppointmentRepository;
+import davidantass.vitta.domain.user.UserService;
+import davidantass.vitta.domain.user.Profile;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -15,10 +17,12 @@ import org.springframework.data.domain.Sort;
 public class PatientService {
     private final PatientRepository repository;
     private final AppointmentRepository appointmentRepository;
+    private final UserService userService;
 
-    public PatientService(PatientRepository repository, AppointmentRepository appointmentRepository) {
+    public PatientService(PatientRepository repository, AppointmentRepository appointmentRepository, UserService userService) {
         this.repository = repository;
         this.appointmentRepository = appointmentRepository;
+        this.userService = userService;
     }
 
     @Transactional(readOnly = true)
@@ -39,11 +43,17 @@ public class PatientService {
 
     @Transactional
     public void save(PatientForm form) {
-        var patient = form.id() == null ? new Patient(form) : findPatient(form.id());
+        var patient = form.id() == null ? null : findPatient(form.id());
         if (repository.isAlreadyRegistered(form.email(), form.cpf(), form.id())) {
             throw new BusinessRuleException("Email or CPF already registered for another patient!");
         }
-        patient.updateDetails(form);
+        if (patient == null) {
+            Long userId = userService.save(form.name(), form.email(), form.cpf(), Profile.PATIENT);
+            patient = new Patient(userId, form);
+        } else {
+            userService.updateDetails(patient.getId(), form.name(), form.email());
+            patient.updateDetails(form);
+        }
         repository.saveAndFlush(patient);
     }
 
@@ -55,6 +65,7 @@ public class PatientService {
         }
         repository.delete(patient);
         repository.flush();
+        userService.delete(id);
     }
 
     private Patient findPatient(Long id) {

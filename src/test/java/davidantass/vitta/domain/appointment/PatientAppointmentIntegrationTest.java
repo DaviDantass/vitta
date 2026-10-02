@@ -3,6 +3,8 @@ package davidantass.vitta.domain.appointment;
 import davidantass.vitta.domain.BusinessRuleException;
 import davidantass.vitta.domain.doctor.*;
 import davidantass.vitta.domain.patient.*;
+import davidantass.vitta.domain.user.UserService;
+import davidantass.vitta.domain.user.Profile;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +29,7 @@ class PatientAppointmentIntegrationTest {
     @Autowired AppointmentService appointments;
     @Autowired AppointmentRepository appointmentRepository;
     @Autowired DoctorRepository doctors;
+    @Autowired UserService users;
     @Autowired JdbcTemplate jdbc;
 
     private Patient registerPatient() {
@@ -55,7 +58,8 @@ class PatientAppointmentIntegrationTest {
     @Test
     void appointmentPersistsBothForeignKeysAndPreventsPatientDeletion() {
         var patient = registerPatient();
-        var doctor = doctors.saveAndFlush(new Doctor(new DoctorForm(null, "Doctor", "doctor@example.com", "123", "123456", Specialty.CARDIOLOGY)));
+        var userId = users.save("Doctor", "doctor@example.com", "123456", Profile.DOCTOR);
+        var doctor = doctors.saveAndFlush(new Doctor(userId, new DoctorForm(null, "Doctor", "doctor@example.com", "123", "123456", Specialty.CARDIOLOGY)));
         appointments.save(new AppointmentForm(null, doctor.getId(), patient.getId(), LocalDateTime.now().plusDays(1), Specialty.CARDIOLOGY));
         var appointment = appointmentRepository.findAll().getFirst();
         assertThat(appointments.findById(appointment.getId()).patientId()).isEqualTo(patient.getId());

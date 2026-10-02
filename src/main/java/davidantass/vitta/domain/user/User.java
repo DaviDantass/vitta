@@ -16,14 +16,28 @@ public class User implements UserDetails {
     private String name;
     private String email;
     private String password;
+    @Enumerated(EnumType.STRING)
+    private Profile profile;
 
     public User() {
     }
-   
+
     public User(String name, String email, String password) {
+        updateDetails(name, email);
+        this.password = password;
+    }
+
+
+    public User(String name, String email, String password, Profile profile) {
         this.name = name;
         this.email = email;
         this.password = password;
+        this.profile = profile;
+    }
+
+    public void updateDetails(String name, String email) {
+        this.name = name;
+        this.email = email;
     }
 
     public Long getId() {
@@ -49,5 +63,9 @@ public class User implements UserDetails {
 
     public String getName() {
         return name;
+    }
+
+    public Profile getProfile() {
+        return profile;
     }
 }

@@ -6,7 +6,6 @@ import jakarta.persistence.*;
 @Table(name = "patients")
 public class Patient {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
     private String email;
@@ -15,7 +14,8 @@ public class Patient {
 
     public Patient() {}
     
-    public Patient(PatientForm form) {
+    public Patient(Long id, PatientForm form) {
+        this.id = id;
         updateDetails(form);
     }
 

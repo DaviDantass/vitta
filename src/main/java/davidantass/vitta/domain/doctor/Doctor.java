@@ -7,7 +7,6 @@ import jakarta.persistence.*;
 public class Doctor {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
     private String email;
@@ -19,7 +18,8 @@ public class Doctor {
     @Deprecated
     public Doctor(){}
 
-    public Doctor(DoctorForm form) {
+    public Doctor(Long id, DoctorForm form) {
+        this.id = id;
         updateDetails(form);
     }
 
