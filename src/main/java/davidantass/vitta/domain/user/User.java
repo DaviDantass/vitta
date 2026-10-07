@@ -7,6 +7,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "users")
@@ -18,6 +19,8 @@ public class User implements UserDetails {
     private String name;
     private String email;
     private String password;
+    private String passwordResetToken;
+    private LocalDateTime passwordResetTokenExpiresAt;
     @Enumerated(EnumType.STRING)
     private Profile profile;
 
@@ -75,6 +78,21 @@ public class User implements UserDetails {
 
     public void changePassword(String encodedPassword) {
         this.password = encodedPassword;
+    }
+
+    public void createPasswordResetToken(String token, LocalDateTime expiresAt) {
+        this.passwordResetToken = token;
+        this.passwordResetTokenExpiresAt = expiresAt;
+    }
+
+    public void clearPasswordResetToken() {
+        this.passwordResetToken = null;
+        this.passwordResetTokenExpiresAt = null;
+    }
+
+    public boolean hasValidPasswordResetToken(String token, LocalDateTime now) {
+        return passwordResetToken != null && passwordResetToken.equals(token)
+                && passwordResetTokenExpiresAt != null && passwordResetTokenExpiresAt.isAfter(now);
     }
 
     public Profile getProfile() {

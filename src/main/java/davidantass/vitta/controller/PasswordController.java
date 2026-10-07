@@ -7,6 +7,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
+import org.springframework.validation.BindingResult;
 
 @Controller
 public class PasswordController {
@@ -23,10 +25,14 @@ public class PasswordController {
     }
 
     @PostMapping("/change-password")
-    public String change(@ModelAttribute("form") PasswordChangeForm form,
-                         @AuthenticationPrincipal User user) {
-        if (!userService.changePassword(user, form.currentPassword(), form.newPassword(), form.newPasswordConfirmation())) {
-            return "redirect:/change-password?error";
+    public String change(@Valid @ModelAttribute("form") PasswordChangeForm form,
+                         BindingResult result,
+                         @AuthenticationPrincipal User user,
+                         Model model) {
+        if (result.hasErrors()
+                || !userService.changePassword(user, form.currentPassword(), form.newPassword(), form.newPasswordConfirmation())) {
+            model.addAttribute("passwordError", "Unable to change password. Check the supplied values.");
+            return "authentication/change-password";
         }
         return "redirect:/?passwordChanged";
     }
