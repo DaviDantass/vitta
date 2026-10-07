@@ -8,7 +8,7 @@ import davidantass.vitta.domain.user.User;
 import davidantass.vitta.domain.doctor.DoctorRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -25,20 +25,15 @@ public class AppointmentService {
     }
 
     @Transactional(readOnly = true)
-    public Page<AppointmentSummary> list(Pageable pagination, @AuthenticationPrincipal User loggedUser) {
+    public Page<AppointmentSummary> list(Pageable pagination, User loggedUser) {
         if (loggedUser.getProfile() == Profile.RECEPTIONIST) {
             return repository.findAllByOrderByDateTimeAscIdAsc(pagination).map(AppointmentSummary::new);
         }
         return repository.findPersonalizedAppointments(loggedUser.getId(), pagination).map(AppointmentSummary::new);
     }
 
-    @Transactional(readOnly = true)
-    public Page<AppointmentSummary> listForUser(Long userId, Pageable pagination) {
-        return repository.findByUserId(userId, pagination).map(AppointmentSummary::new);
-    }
-
     @Transactional
-    public void save(AppointmentForm form) {
+    public void save(AppointmentForm form, User loggedUser) {
         var appointmentDoctor = doctorRepository.findById(form.doctorId())
                 .orElseThrow(() -> new BusinessRuleException("Selected doctor is no longer available."));
         var appointmentPatient = patientRepository.findById(form.patientId())
@@ -49,20 +44,48 @@ public class AppointmentService {
         if (form.id() == null) {
             repository.save(new Appointment(appointmentDoctor, appointmentPatient, form));
         } else {
-            var appointment = repository.findById(form.id()).orElseThrow();
+            var appointment = findAuthorized(form.id(), loggedUser);
             appointment.updateDetails(appointmentDoctor, appointmentPatient, form);
         }
     }
 
+    // Kept for existing service-level tests that create new appointments directly.
+    @Transactional
+    public void save(AppointmentForm form) {
+        if (form.id() != null) {
+            throw new AccessDeniedException("An authenticated user is required to update an appointment.");
+        }
+        save(form, null);
+    }
+
     @Transactional(readOnly = true)
-    public AppointmentForm findById(Long id) {
+    public AppointmentForm findById(Long id, User loggedUser) {
+        var appointment = findAuthorized(id, loggedUser);
+        return new AppointmentForm(appointment.getId(), appointment.getDoctor().getId(), appointment.getPatient().getId(), appointment.getDateTime(), appointment.getDoctor().getSpecialty());
+    }
+
+    // Kept package-private for domain tests; web requests use the authorized overload above.
+    @Transactional(readOnly = true)
+    AppointmentForm findById(Long id) {
         var appointment = repository.findById(id).orElseThrow();
         return new AppointmentForm(appointment.getId(), appointment.getDoctor().getId(), appointment.getPatient().getId(), appointment.getDateTime(), appointment.getDoctor().getSpecialty());
     }
 
     @Transactional
-    public void delete(Long id) {
-        repository.deleteById(id);
+    public void delete(Long id, User loggedUser) {
+        var appointment = findAuthorized(id, loggedUser);
+        repository.delete(appointment);
+    }
+
+    private Appointment findAuthorized(Long id, User loggedUser) {
+        var appointment = loggedUser.getProfile() == Profile.RECEPTIONIST
+                ? repository.findById(id)
+                : repository.findAuthorizedById(id, loggedUser.getId());
+
+        if (appointment.isEmpty()) {
+            throw new AccessDeniedException("You do not have access to this appointment.");
+        }
+        return appointment.get();
     }
 
 }

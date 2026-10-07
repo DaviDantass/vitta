@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import java.util.Optional;
 
 public interface AppointmentRepository extends JpaRepository<Appointment, Long> {
 
@@ -23,5 +24,13 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
 
     @Query("SELECT c FROM Appointment c " + "WHERE (c.doctor.id = :id OR c.patient.id = :id)" + " ORDER BY c.dateTime ASC, c.id ASC")
     Page<Appointment> findPersonalizedAppointments(Long id, Pageable pagination);
+
+    @EntityGraph(attributePaths = {"doctor", "patient"})
+    @Query("""
+            SELECT a FROM Appointment a
+            WHERE a.id = :appointmentId
+              AND (a.doctor.id = :userId OR a.patient.id = :userId)
+            """)
+    Optional<Appointment> findAuthorizedById(Long appointmentId, Long userId);
 
 }

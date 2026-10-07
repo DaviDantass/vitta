@@ -44,10 +44,10 @@ public class AppointmentController {
     }
 
     @GetMapping("form")
-    public String showForm(Long id, Model model) {
+    public String showForm(Long id, Model model, @AuthenticationPrincipal User loggedUser) {
         model.addAttribute("patients", patientService.listForAppointments());
         if (id != null) {
-            model.addAttribute("form", service.findById(id));
+            model.addAttribute("form", service.findById(id, loggedUser));
         } else {
             model.addAttribute("form", new AppointmentForm(null, null, null, null, null));
         }
@@ -56,7 +56,8 @@ public class AppointmentController {
     }
 
     @PostMapping
-    public String save(@Valid @ModelAttribute("form") AppointmentForm form, BindingResult result, Model model) {
+    public String save(@Valid @ModelAttribute("form") AppointmentForm form, BindingResult result, Model model,
+                       @AuthenticationPrincipal User loggedUser) {
         model.addAttribute("patients", patientService.listForAppointments());
         if (result.hasErrors()) {
             model.addAttribute("form", form);
@@ -64,7 +65,7 @@ public class AppointmentController {
         }
 
         try {
-            service.save(form);
+            service.save(form, loggedUser);
             return LIST_REDIRECT;
         } catch (BusinessRuleException e) {
             model.addAttribute("error", e.getMessage());
@@ -74,8 +75,8 @@ public class AppointmentController {
     }
 
     @DeleteMapping
-    public String delete(Long id) {
-        service.delete(id);
+    public String delete(Long id, @AuthenticationPrincipal User loggedUser) {
+        service.delete(id, loggedUser);
         return LIST_REDIRECT;
     }
 
