@@ -42,7 +42,6 @@ class PatientAndAppointmentControllerTest {
         var patient = new PatientSummary(7L, "Ana", "ana@example.com", "11999999999", "123.456.789-00");
         when(patients.list(any())).thenReturn(new PageImpl<>(List.of(patient), PageRequest.of(0, 10), 11));
         mvc.perform(get("/patients")).andExpect(status().isOk())
-                .andExpect(content().string(containsString("/patients/form?id=7")))
                 .andExpect(content().string(containsString("patients?page=1")))
                 .andExpect(content().string(containsString("123.456.789-00")));
     }

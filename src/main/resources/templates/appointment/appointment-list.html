@@ -2,6 +2,7 @@
 <html lang="en"
       xmlns:th="http://thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       layout:decorate="~{template.html}">
 <head>
     <title>Appointments</title>
@@ -13,7 +14,7 @@
             <section class="card">
                 <h2 class="title">Appointments</h2>
 
-                <div class="table-controls">
+                <div class="table-controls" sec:authorize="!hasRole('DOCTOR')">
                     <a href="appointment-form.html" th:href="@{/appointments/form}" class="btn btn-tertiary">
                         <img src="/static/assets/plus.png" th:src="@{/assets/plus.png}" alt="Add icon" class="btn-icon">
                         New appointment
@@ -41,7 +42,7 @@
                             <td th:text="${#temporals.format(appointment.dateTime, 'dd/MM/yyyy HH:mm')}"></td>
                             <td  th:text="${appointment.specialty}"></td>
                             <td>
-                                <a href="#" class="btn btn-icon" th:href="@{/appointments/form?id={id}(id=${appointment.id})}" title="Edit">
+                                <a sec:authorize="!hasRole('DOCTOR')" href="#" class="btn btn-icon" th:href="@{/appointments/form?id={id}(id=${appointment.id})}" title="Edit">
                                     <img src="/static/assets/edit.svg" th:src="@{/assets/edit.svg}" alt="Edit">
                                 </a>
                                 <a href="#deleteModal" class="btn btn-icon" data-toggle="modal" th:data-id="${appointment.id}" data-url="/appointments" title="Delete">

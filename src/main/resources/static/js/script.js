@@ -1,4 +1,39 @@
 document.addEventListener('DOMContentLoaded', function () {
+    const dropdowns = document.querySelectorAll('.header .dropdown');
+
+    dropdowns.forEach(dropdown => {
+        const toggle = dropdown.querySelector(':scope > a');
+        if (!toggle) return;
+
+        toggle.addEventListener('click', event => {
+            event.preventDefault();
+            const isOpen = dropdown.classList.toggle('open');
+            toggle.setAttribute('aria-expanded', String(isOpen));
+
+            dropdowns.forEach(otherDropdown => {
+                if (otherDropdown === dropdown) return;
+                otherDropdown.classList.remove('open');
+                otherDropdown.querySelector(':scope > a')?.setAttribute('aria-expanded', 'false');
+            });
+        });
+    });
+
+    document.addEventListener('click', event => {
+        if (event.target.closest('.header .dropdown')) return;
+        dropdowns.forEach(dropdown => {
+            dropdown.classList.remove('open');
+            dropdown.querySelector(':scope > a')?.setAttribute('aria-expanded', 'false');
+        });
+    });
+
+    document.addEventListener('keydown', event => {
+        if (event.key !== 'Escape') return;
+        dropdowns.forEach(dropdown => {
+            dropdown.classList.remove('open');
+            dropdown.querySelector(':scope > a')?.setAttribute('aria-expanded', 'false');
+        });
+    });
+
     const specialtySelect = document.getElementById('specialty');
     const doctorSelect = document.getElementById('doctorId');
 

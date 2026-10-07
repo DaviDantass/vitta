@@ -1,41 +1,47 @@
-<header class="header" xmlns:th="http://thymeleaf.org" th:fragment="menu" xmlns:sec="http://www.thymeleaf.org/extras/spring-security" >
-
+<header class="header" xmlns:th="http://thymeleaf.org" th:fragment="menu"
+        xmlns:sec="http://www.thymeleaf.org/extras/spring-security" >
     <div class="container header-container">
-        <a href="../index.html" th:href="@{/}" class="logo">
-            Vitta
+        <a href="../index.html" th:href="@{/}" class="logo" aria-label="Vitta home">
+            <span class="logo-word">Vitta</span>
         </a>
 
         <nav class="main-nav">
-            <ul>
+            <ul sec:authorize="isAuthenticated()" class="nav-left">
                 <li class="dropdown">
-                    <a href="#">MANAGEMENT <i class="arrow-down"></i></a>
+                    <a href="#" aria-haspopup="true" aria-expanded="false">MANAGEMENT <i class="arrow-down"></i></a>
                     <ul class="dropdown-menu">
-                        <li>
-                            <a href="../doctor/doctor-list.html" th:href="@{/doctors}" sec:authorize="hasRole('RECEPTIONIST')">Doctors</a>
+                        <li sec:authorize="hasRole('RECEPTIONIST')">
+                            <a href="../doctor/doctor-list.html" th:href="@{/doctors}">Doctors</a>
+                        </li>
+
+                        <li sec:authorize="hasRole('RECEPTIONIST')">
+                            <a href="../patient/patient-list.html" th:href="@{/patients}">Patients</a>
                         </li>
 
                         <li>
-                            <a href="../patient/patient-list.html" th:href="@{/patients}" sec:authorize="hasRole('RECEPTIONIST')">Patients</a>
-                        </li>
-                        <li>
-                            <a href="../appointment/appointment-list.html" th:href="@{/appointments}" sec:authorize="hasAnyRole('RECEPTIONIST', 'DOCTOR')">Appointments</a>
+                            <a href="../appointment/appointment-list.html" th:href="@{/appointments}">Appointments</a>
                         </li>
                     </ul>
                 </li>
             </ul>
-            <ul class="nav-right">
+            <ul sec:authorize="isAuthenticated()" class="nav-right">
                 <li class="dropdown">
-                    <a href="#">Hello, <span sec:authentication="principal.name"></span> <i class="arrow-down"></i></a>
+                    <a href="#" aria-haspopup="true" aria-expanded="false">Hello, <span sec:authentication="principal.name"></span> <i class="arrow-down"></i></a>
                     <ul class="dropdown-menu">
                         <li>
-                            <div class="navbar-form"><a class="btn-link" th:href="@{/change-password}">Change password</a></div>
+                            <div class="navbar-form">
+                                <a class="btn-link" href="#" th:href="@{/change-password}">Change password</a>
+                            </div>
                             <form class="navbar-form" th:action="@{/logout}" method="post">
-                                <button class="btn-link">SIGN OUT</button>
+                                <button type="submit" class="btn-link signout-button">SIGN OUT</button>
                             </form>
                         </li>
                     </ul>
                 </li>
             </ul>
+            <div class="navbar-form" sec:authorize="!isAuthenticated()">
+                <a class="btn-link" href="#" th:href="@{/login}">Login</a>
+            </div>
         </nav>
     </div>
 </header>

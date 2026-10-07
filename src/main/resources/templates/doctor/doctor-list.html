@@ -2,6 +2,7 @@
 <html lang="en"
       xmlns:th="http://thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       layout:decorate="~{template.html}">
 <head>
     <title>Doctors</title>
@@ -13,7 +14,7 @@
             <section class="card">
                 <h2 class="title">Doctors</h2>
 
-                <div class="table-controls">
+                <div class="table-controls" sec:authorize="hasRole('RECEPTIONIST')">
                     <a href="doctor-form.html" th:href="@{/doctors/form}" class="btn btn-tertiary">
                         <img src="/static/assets/plus.png" th:src="@{/assets/plus.png}" alt="Add icon" class="btn-icon">
                         New doctor
@@ -27,7 +28,7 @@
                             <th>Email</th>
                             <th>CRM</th>
                             <th>Specialty</th>
-                            <th>Actions</th>
+                            <th sec:authorize="hasRole('RECEPTIONIST')">Actions</th>
                         </tr>
                     </thead>
 
@@ -37,7 +38,7 @@
                             <td th:text="${doctor.email}"></td>
                             <td th:text="${doctor.medicalRegistration}"></td>
                             <td th:text="${doctor.specialty}"></td>
-                            <td>
+                            <td sec:authorize="hasRole('RECEPTIONIST')">
                                 <a href="#" class="btn btn-edit" th:href="@{/doctors/form?id={id}(id=${doctor.id})}" title="Edit">
                                     <img src="/static/assets/edit.svg" th:src="@{/assets/edit.svg}" alt="Edit">
                                 </a>
