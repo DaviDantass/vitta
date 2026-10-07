@@ -7,17 +7,22 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.web.SecurityFilterChain;
+import davidantass.vitta.domain.user.UserService;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration {
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, UserService userService) throws Exception {
         return http
                 .authorizeHttpRequests(req -> {
                     req.requestMatchers("/css/**", "/js/**", "/assets/**").permitAll();
+                    req.requestMatchers("/doctors/**", "/patients/**").hasRole("RECEPTIONIST");
+                    req.requestMatchers("/appointments/**").hasAnyRole("RECEPTIONIST", "DOCTOR", "PATIENT");
                     req.anyRequest().authenticated();
                 }).formLogin(form -> form.loginPage("/login")
                         .defaultSuccessUrl("/")
@@ -26,11 +31,20 @@ public class SecurityConfiguration {
                 .permitAll())
                 .rememberMe(rememberMe -> rememberMe.key("vitta-local-remember-me-key")
                         .alwaysRemember(true))
+                .userDetailsService(userService)
                 .csrf(Customizer.withDefaults())
                 .build();
     }
     @Bean
     public PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public AuthenticationProvider authenticationProvider(UserService userService, PasswordEncoder passwordEncoder) {
+        var provider = new DaoAuthenticationProvider();
+        provider.setUserDetailsService(userService);
+        provider.setPasswordEncoder(passwordEncoder);
+        return provider;
     }
 }

@@ -11,14 +11,14 @@
                     <a href="#">MANAGEMENT <i class="arrow-down"></i></a>
                     <ul class="dropdown-menu">
                         <li>
-                            <a href="../doctor/doctor-list.html" th:href="@{/doctors}">Doctors</a>
+                            <a href="../doctor/doctor-list.html" th:href="@{/doctors}" sec:authorize="hasRole('RECEPTIONIST')">Doctors</a>
                         </li>
 
                         <li>
-                            <a href="../patient/patient-list.html" th:href="@{/patients}">Patients</a>
+                            <a href="../patient/patient-list.html" th:href="@{/patients}" sec:authorize="hasRole('RECEPTIONIST')">Patients</a>
                         </li>
                         <li>
-                            <a href="../appointment/appointment-list.html" th:href="@{/appointments}">Appointments</a>
+                            <a href="../appointment/appointment-list.html" th:href="@{/appointments}" sec:authorize="hasAnyRole('RECEPTIONIST', 'DOCTOR')">Appointments</a>
                         </li>
                     </ul>
                 </li>
@@ -28,6 +28,7 @@
                     <a href="#">Hello, <span sec:authentication="principal.name"></span> <i class="arrow-down"></i></a>
                     <ul class="dropdown-menu">
                         <li>
+                            <div class="navbar-form"><a class="btn-link" th:href="@{/change-password}">Change password</a></div>
                             <form class="navbar-form" th:action="@{/logout}" method="post">
                                 <button class="btn-link">SIGN OUT</button>
                             </form>

@@ -12,6 +12,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import davidantass.vitta.domain.user.User;
 
 @Controller
 @RequestMapping("appointments")
@@ -35,8 +37,8 @@ public class AppointmentController {
     }
 
     @GetMapping
-    public String showList(@PageableDefault Pageable pagination, Model model) {
-        var appointments = service.list(pagination);
+    public String showList(@PageableDefault Pageable pagination, Model model, @AuthenticationPrincipal User loggedUser) {
+        var appointments = service.list(pagination, loggedUser);
         model.addAttribute("appointments", appointments);
         return LIST_VIEW;
     }

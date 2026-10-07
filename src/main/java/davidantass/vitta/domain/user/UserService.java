@@ -42,6 +42,16 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
+    public boolean changePassword(User user, String currentPassword, String newPassword, String confirmation) {
+        if (!passwordEncoder.matches(currentPassword, user.getPassword())
+                || !newPassword.equals(confirmation)) {
+            return false;
+        }
+        user.changePassword(passwordEncoder.encode(newPassword));
+        return true;
+    }
+
+    @Transactional
     public void delete(Long id) {
         repository.delete(findUser(id));
     }

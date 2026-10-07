@@ -3,9 +3,12 @@ package davidantass.vitta.domain.appointment;
 import org.springframework.transaction.annotation.Transactional;
 import davidantass.vitta.domain.BusinessRuleException;
 import davidantass.vitta.domain.patient.PatientRepository;
+import davidantass.vitta.domain.user.Profile;
+import davidantass.vitta.domain.user.User;
 import davidantass.vitta.domain.doctor.DoctorRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -22,8 +25,16 @@ public class AppointmentService {
     }
 
     @Transactional(readOnly = true)
-    public Page<AppointmentSummary> list(Pageable pagination) {
-        return repository.findAllByOrderByDateTimeAscIdAsc(pagination).map(AppointmentSummary::new);
+    public Page<AppointmentSummary> list(Pageable pagination, @AuthenticationPrincipal User loggedUser) {
+        if (loggedUser.getProfile() == Profile.RECEPTIONIST) {
+            return repository.findAllByOrderByDateTimeAscIdAsc(pagination).map(AppointmentSummary::new);
+        }
+        return repository.findPersonalizedAppointments(loggedUser.getId(), pagination).map(AppointmentSummary::new);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<AppointmentSummary> listForUser(Long userId, Pageable pagination) {
+        return repository.findByUserId(userId, pagination).map(AppointmentSummary::new);
     }
 
     @Transactional

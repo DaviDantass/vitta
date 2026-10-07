@@ -2,9 +2,11 @@ package davidantass.vitta.domain.user;
 
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.Collections;
 
 @Entity
 @Table(name = "users")
@@ -35,6 +37,10 @@ public class User implements UserDetails {
         this.profile = profile;
     }
 
+    /**
+     * @param name
+     * @param email
+     */
     public void updateDetails(String name, String email) {
         this.name = name;
         this.email = email;
@@ -48,7 +54,9 @@ public class User implements UserDetails {
     }
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return java.util.List.of();
+        return profile == null
+                ? Collections.emptySet()
+                : Collections.singleton(new SimpleGrantedAuthority("ROLE_" + profile.name()));
     }
 
     @Override
@@ -63,6 +71,10 @@ public class User implements UserDetails {
 
     public String getName() {
         return name;
+    }
+
+    public void changePassword(String encodedPassword) {
+        this.password = encodedPassword;
     }
 
     public Profile getProfile() {
